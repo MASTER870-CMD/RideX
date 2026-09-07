@@ -1,0 +1,56 @@
+name: ridex
+description: "RIDEX — Smart Helmet Safety & Ride Rewards App"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  # State management
+  provider: ^6.1.2
+  # Persistence
+  shared_preferences: ^2.3.3
+  # Date formatting
+  intl: ^0.19.0
+  # Document file picker
+  file_picker: ^8.1.7
+  # Local notifications (emission reminders)
+  flutter_local_notifications: ^17.2.4
+  # Notification / storage permissions
+  permission_handler: ^11.3.1
+  # Google Fonts – Plus Jakarta Sans (matches Stitch design)
+  google_fonts: ^6.2.1
+  # Open files / URLs
+  url_launcher: ^6.3.1
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+flutter_native_splash:
+  color: "#FAF8F5"
+  image: assets/images/blank.png
+  android_12:
+    color: "#FAF8F5"
+    image: assets/images/blank.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/ridex_logo.png"
