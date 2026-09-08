@@ -68,8 +68,6 @@ class _SafetyGateScreenState extends State<SafetyGateScreen>
                         const SizedBox(height: 12),
                         _buildStartRide(context, svc, status),
                         const SizedBox(height: 12),
-                        // Dev toggles (debug only)
-                        if (true) _buildDevToggles(context, svc, status),
                       ],
                     ),
                   ),
@@ -409,65 +407,6 @@ class _SafetyGateScreenState extends State<SafetyGateScreen>
     );
   }
 
-  Widget _buildDevToggles(BuildContext context, SafetyService svc,
-      SafetyStatus status) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: RidexColors.ivory,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: RidexColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('DEV TOGGLES',
-              style: RidexTextStyles.labelBold.copyWith(
-                color: RidexColors.muted, fontSize: 9,
-              )),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(child: _toggle(
-                'Helmet',
-                status.helmetDetected,
-                svc.toggleHelmet,
-              )),
-              const SizedBox(width: 8),
-              Expanded(child: _toggle(
-                'Chinstrap',
-                status.chinstrapFastened,
-                svc.toggleChinstrap,
-              )),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _toggle(String label, bool val, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: val ? RidexColors.emeraldBg : RidexColors.errorBg,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: val ? RidexColors.emerald : RidexColors.red,
-          ),
-        ),
-        child: Center(
-          child: Text('$label: ${val ? "ON" : "OFF"}',
-              style: RidexTextStyles.bodySmall.copyWith(
-                fontWeight: FontWeight.w700,
-                color: val ? RidexColors.emeraldDark : RidexColors.red,
-              )),
-        ),
-      ),
-    );
-  }
 }
 
 class _PulsingDot extends StatefulWidget {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../shared/models/safety_status.dart';
 
 /// Safety hardware abstraction.
@@ -9,19 +10,31 @@ class SafetyService extends ChangeNotifier {
     chinstrapFastened: false, // Mock: chinstrap is unfastened initially
   );
 
+  SafetyService() {
+    _initFirebaseListener();
+  }
+
   SafetyStatus get status => _status;
 
-  // ── Dev / Demo toggles — only used in development ──────────────────────────
-  void toggleHelmet() {
-    _status = _status.copyWith(helmetDetected: !_status.helmetDetected);
-    notifyListeners();
-  }
+  void _initFirebaseListener() {
+    FirebaseFirestore.instance
+        .collection('requests')
+        .doc('webDemo')
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        final data = snapshot.data()!;
+        final power = data['power'] as bool? ?? false;
+        final helmet = data['helmetDetected'] as bool? ?? false;
 
-  void toggleChinstrap() {
-    _status = _status.copyWith(chinstrapFastened: !_status.chinstrapFastened);
-    notifyListeners();
+        _status = _status.copyWith(
+          helmetDetected: helmet,
+          chinstrapFastened: power, // Mapping web simulator 'power' to 'chinstrapFastened'
+        );
+        notifyListeners();
+      }
+    });
   }
-
   void startRide() {
     if (_status.canStartRide) {
       _status = _status.copyWith(rideActive: true);
