@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideX Circuit Simulator</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg ridex-navbar px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
+                <!-- Simple SVG logo icon -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                RideX Circuit Simulator
+            </a>
+            <div class="d-flex align-items-center">
+                <span id="connectionBanner" class="badge rounded-pill bg-secondary d-flex align-items-center px-3 py-2">
+                    <span class="status-dot bg-light me-2"></span>
+                    <span id="connectionText">Checking connection...</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container py-4">
+        <div id="offlineAlert" class="alert alert-warning d-none" role="alert">
+            <strong>Offline!</strong> Changes will sync once reconnected.
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: Circuit & Controls -->
+            <div class="col-lg-8">
+                
+                <!-- Circuit Diagram Card -->
+                <div class="card ridex-card mb-4">
+                    <div class="card-header bg-transparent border-0 pt-3 pb-0">
+                        <h5 class="fw-semibold text-primary-dark mb-0">Live Circuit Diagram</h5>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <div class="circuit-container">
+                            <svg id="circuitSvg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Definitions for filters/glows -->
+                                <defs>
+                                    <filter id="glowGreen" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                    <filter id="glowRed" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                <!-- Wires (Base) -->
+                                <path class="wire-base" d="M 150 200 L 250 200" /> <!-- Sensor to ESP -->
+                                <path class="wire-base" d="M 350 150 L 450 150" /> <!-- ESP to Green LED -->
+                                <path class="wire-base" d="M 350 250 L 450 250" /> <!-- ESP to Red LED -->
+                                <path class="wire-base" d="M 300 100 L 300 50 L 450 50" /> <!-- ESP to Buzzer -->
+
+                                <!-- Wires (Animated Current - Initially hidden) -->
+                                <path id="wireSensor" class="wire-current" d="M 150 200 L 250 200" />
+                                <path id="wireGreen" class="wire-current" d="M 350 150 L 450 150" />
+                                <path id="wireRed" class="wire-current" d="M 350 250 L 450 250" />
+                                <path id="wireBuzzer" class="wire-current" d="M 300 100 L 300 50 L 450 50" />
+
+                                <!-- Helmet Sensor Node -->
+                                <g transform="translate(100, 200)">
+                                    <circle cx="0" cy="0" r="30" class="component-box" />
+                                    <circle id="sensorIndicator" cx="0" cy="0" r="15" fill="#ccc" />
+                                    <text x="0" y="45" class="svg-text" text-anchor="middle">Helmet Sensor</text>
+                                </g>
+
+                                <!-- ESP32 Node -->
+                                <g transform="translate(300, 200)">
+                                    <rect x="-50" y="-100" width="100" height="200" rx="10" class="component-box" />
+                                    <rect x="-40" y="-90" width="80" height="40" rx="5" fill="#12577A" opacity="0.1" />
+                                    <text x="0" y="5" class="svg-text fw-bold" fill="#0F6E6E" text-anchor="middle">ESP32</text>
+                                    <!-- Pins left -->
+                                    <circle cx="-50" cy="0" r="4" fill="#666" />
+                                    <!-- Pins right -->
+                                    <circle cx="50" cy="-50" r="4" fill="#666" />
+                                    <circle cx="50" cy="50" r="4" fill="#666" />
+                                    <!-- Pins top -->
+                                    <circle cx="0" cy="-100" r="4" fill="#666" />
+                                </g>
+
+                                <!-- Green LED Node -->
+                                <g transform="translate(470, 150)">
+                                    <path d="M -15 10 L 15 10 L 0 -15 Z" fill="#ccc" class="component-box" />
+                                    <circle id="ledGreen" cx="0" cy="-15" r="15" fill="#888" />
+                                    <text x="0" y="30" class="svg-text" text-anchor="middle">HELMET OK</text>
+                                </g>
+
+                                <!-- Red LED Node -->
+                                <g transform="translate(470, 250)">
+                                    <path d="M -15 10 L 15 10 L 0 -15 Z" fill="#ccc" class="component-box" />
+                                    <circle id="ledRed" cx="0" cy="-15" r="15" fill="#888" />
+                                    <text x="0" y="30" class="svg-text" text-anchor="middle">NO HELMET</text>
+                                </g>
+
+                                <!-- Buzzer Node -->
+                                <g transform="translate(470, 50)">
+                                    <rect x="-20" y="-15" width="40" height="30" rx="5" class="component-box" />
+                                    <circle cx="0" cy="0" r="8" fill="#555" />
+                                    <!-- Sound waves (Animated) -->
+                                    <path id="buzzerWave1" d="M 30 -10 A 15 15 0 0 1 30 10" fill="none" stroke="#F2A93B" stroke-width="3" stroke-linecap="round" opacity="0"/>
+                                    <path id="buzzerWave2" d="M 40 -20 A 25 25 0 0 1 40 20" fill="none" stroke="#F2A93B" stroke-width="3" stroke-linecap="round" opacity="0"/>
+                                    <text x="0" y="35" class="svg-text" text-anchor="middle">Buzzer</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Card -->
+                <div class="card ridex-card">
+                    <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-semibold text-primary-dark mb-0">Controls</h5>
+                        <div id="syncBadge" class="badge bg-light text-muted border px-2 py-1">Synced</div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <div class="form-check form-switch custom-switch custom-switch-lg">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="powerSwitch">
+                                    <label class="form-check-label fw-medium ms-2" for="powerSwitch">Circuit Power</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-check form-switch custom-switch custom-switch-lg">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="helmetSwitch">
+                                    <label class="form-check-label fw-medium ms-2" for="helmetSwitch">Helmet Detected</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-box p-3 rounded">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Current State</p>
+                            <p id="statusText" class="mb-0 fw-medium fs-5 text-dark">Circuit is OFF</p>
+                        </div>
+                        
+                        <div class="mt-3 text-end">
+                            <small class="text-muted" id="lastSyncedTime">Last synced: Never</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Activity Log -->
+            <div class="col-lg-4">
+                <div class="card ridex-card h-100">
+                    <div class="card-header bg-transparent border-0 pt-3 pb-0">
+                        <h5 class="fw-semibold text-primary-dark mb-0">Activity Log</h5>
+                    </div>
+                    <div class="card-body p-0 mt-3">
+                        <ul class="list-group list-group-flush log-list" id="activityLog">
+                            <!-- Log items will be inserted here -->
+                            <li class="list-group-item text-muted text-center py-4">Waiting for activity...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- App Logic -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="circuit.js"></script>
+</body>
+</html>

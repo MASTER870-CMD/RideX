@@ -1,0 +1,208 @@
+:root {
+    --primary-color: #0F6E6E;
+    --primary-dark: #094747;
+    --accent-color: #F2A93B;
+    --bg-color: #F7F9FA;
+    --success-color: #2E9E5B;
+    --error-color: #D64545;
+    --off-color: #888888;
+    --card-bg: #FFFFFF;
+    --text-main: #333333;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+}
+
+/* Navbar */
+.ridex-navbar {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Cards */
+.ridex-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    background-color: var(--card-bg);
+    overflow: hidden;
+}
+
+.text-primary-dark {
+    color: var(--primary-dark);
+}
+
+/* Connection Badge */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+.bg-connected {
+    background-color: var(--success-color) !important;
+}
+.bg-offline {
+    background-color: var(--error-color) !important;
+}
+
+/* Switches */
+.custom-switch-lg .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+}
+.custom-switch-lg .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.custom-switch-lg .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(15, 110, 110, 0.25);
+}
+.custom-switch-lg .form-check-label {
+    cursor: pointer;
+    margin-top: 0.15rem;
+}
+
+/* Status Box */
+.status-box {
+    background-color: rgba(15, 110, 110, 0.05);
+    border-left: 4px solid var(--primary-color);
+}
+.status-box.active-helmet {
+    border-left-color: var(--success-color);
+    background-color: rgba(46, 158, 91, 0.05);
+}
+.status-box.active-no-helmet {
+    border-left-color: var(--error-color);
+    background-color: rgba(214, 69, 69, 0.05);
+}
+
+/* Activity Log */
+.log-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.log-list .list-group-item {
+    border-left: 3px solid transparent;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+}
+.log-list .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+.log-power-on { border-left-color: var(--primary-color) !important; }
+.log-power-off { border-left-color: var(--off-color) !important; }
+.log-helmet-yes { border-left-color: var(--success-color) !important; }
+.log-helmet-no { border-left-color: var(--error-color) !important; }
+
+/* -------------------------
+   SVG Circuit Animations 
+   ------------------------- */
+.circuit-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+}
+
+/* Base elements */
+.component-box {
+    fill: #ffffff;
+    stroke: #d0d0d0;
+    stroke-width: 2;
+}
+
+.svg-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    fill: #555;
+}
+
+.wire-base {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Animated current wire */
+.wire-current {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 8 8;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease;
+}
+
+.wire-current.active {
+    opacity: 1;
+    animation: flow 1s linear infinite;
+}
+
+.wire-current.active-success {
+    stroke: var(--success-color);
+}
+.wire-current.active-error {
+    stroke: var(--error-color);
+}
+
+@keyframes flow {
+    to {
+        stroke-dashoffset: -16;
+    }
+}
+
+/* LED and Sensor States */
+.led-active-green {
+    fill: var(--success-color) !important;
+    filter: url(#glowGreen);
+    animation: pulseGlowGreen 1.5s infinite alternate;
+}
+
+.led-active-red {
+    fill: var(--error-color) !important;
+    filter: url(#glowRed);
+    animation: pulseGlowRed 1.5s infinite alternate;
+}
+
+.sensor-active {
+    fill: var(--accent-color) !important;
+}
+
+@keyframes pulseGlowGreen {
+    from { opacity: 0.8; }
+    to { opacity: 1; filter: drop-shadow(0 0 8px rgba(46, 158, 91, 0.8)); }
+}
+
+@keyframes pulseGlowRed {
+    from { opacity: 0.8; }
+    to { opacity: 1; filter: drop-shadow(0 0 8px rgba(214, 69, 69, 0.8)); }
+}
+
+/* Buzzer Animation */
+.buzzer-wave.active {
+    animation: soundWave 1s infinite ease-out;
+}
+.buzzer-wave.active:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+@keyframes soundWave {
+    0% {
+        opacity: 1;
+        transform: scale(0.8) translate(-5px, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5) translate(5px, 0);
+    }
+}
