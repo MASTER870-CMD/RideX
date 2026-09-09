@@ -39,3 +39,4 @@ Activity commit mass 8
 Activity commit mass 9
 Activity commit mass 10
 Activity commit mass 11
+Activity commit mass 12
